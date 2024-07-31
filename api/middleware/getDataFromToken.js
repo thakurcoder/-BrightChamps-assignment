@@ -6,7 +6,7 @@ export const getDataFromToken = async (req,res,next)=>{
     console.log("token",token)
     try {
         if(!token){
-            return res.satus(401).json({message:"No token present"})
+            return res.status(401).json({message:"No token present"})
         }
         console.log("asd")
         const decodeToken = jwt.verify(token, process.env.TOKEN_SECRET)

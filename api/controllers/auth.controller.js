@@ -50,7 +50,7 @@ export const userVerification = async (req,res)=>{
         console.log("otp",otp)
         console.log("userInputOtp",userInputOtp)
         if(otp != userInputOtp){
-            return res.status(401).json({message:"invalid otp"})
+            return res.status(400).json({message:"invalid otp"})
         }
 
 
@@ -70,6 +70,10 @@ export const userVerification = async (req,res)=>{
 export const login = async (req,res)=>{
     const {email,password} = req.body;
     try {
+        if (!email || !password){
+            return res.status(401).json({message:"Email and password are required"})
+        }
+
         const checkUser = await User.findOne({email})
         
         if(!checkUser){
@@ -92,6 +96,7 @@ export const login = async (req,res)=>{
         res.cookie("token",token,{httpOnly:true})
         res.status(200).json({message:"login successful"})
     } catch (error) {
+        console.log(error)
         res.status(500).json({message:error})
     }
 }
@@ -99,6 +104,10 @@ export const login = async (req,res)=>{
 export const forgetPassword = async(req,res)=>{
     const {email} = req.body
     try {
+        if(!email){
+            return res.status(400).json({ message: "email is required" })
+        }
+
         const checkEmail = await User.findOne({email})
         if(!checkEmail){
             return res.status(401).json({message:"email is not present"})
@@ -122,6 +131,9 @@ export const forgetPassword = async(req,res)=>{
 export const resetPassword = async (req,res)=>{
     const {password} = req.body
     try {
+        if (!password){
+            return res.status(400).json({ message: "Password is required" });
+        }
         const userid = req.user.id
         
 
@@ -137,7 +149,7 @@ export const resetPassword = async (req,res)=>{
         if(!user){
             return res.status(401).json({messgae:"password does not change"})
         }
-
+        res.clearCookie("token")
         res.status(200).json({messgae:"password change successful"})
 
     } catch (error) {
